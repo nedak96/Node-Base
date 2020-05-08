@@ -1,0 +1,21 @@
+require('dotenv').config();
+
+const process = require('process');
+const http = require('http');
+const app = require('../src/app');
+
+
+if (process.env.PORT && parseInt(process.env.PORT, 10)) {
+  app.set('port', parseInt(process.env.PORT, 10));
+} else {
+  app.set('port', 2100);
+}
+
+const server = http.createServer(app);
+
+const onListening = () => {
+  console.dir(server.address());
+};
+
+server.listen(app.get('port'));
+server.on('listening', onListening);
