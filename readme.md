@@ -2,19 +2,21 @@
 
 *Base code for a Node.JS Server*
 
-Features:  
-* Sessions
+Features:
+* Express Setup
+* Express Sessions
 * Basic Login Endpoints
 * Database Abstraction Layer
   * MongoDB base layer
   * Elastic base layer
   * MySQL base layer
+  * PostgreSQL base layer
 * Mocha tests for database layers
 
 To Run:
 * Clone repository
-* Start Redis server
-* Start database server (Set up for MongoDB)
+* Start Redis (or other desired session storage)
+* Start database (Set up for MongoDB)
 * Run `yarn` to install dependencies
 * Run `yarn start` to start development server
 
