@@ -4,7 +4,7 @@
 
 Features:
 * Express Setup
-* Express Sessions
+* JWT Setup
 * Basic Login Endpoints
 * Database Abstraction Layer
   * MongoDB base layer
@@ -15,12 +15,12 @@ Features:
 
 To Run:
 * Clone repository
-* Start Redis (or other desired session storage)
 * Start database (Set up for MongoDB)
 * Run `yarn` to install dependencies
 * Run `yarn start` to start development server
 
-Things to Note:
+Note:
+* This is not production ready code
 * Database layers are not fully built
 * Further security must be built out
-* If running the MySQL DB layer, I ran `ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password’;` in the client
+* If running with the MySQL DB layer, I ran `ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password’;` in the MySQL client

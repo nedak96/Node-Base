@@ -5,11 +5,14 @@
  * @since
  */
 
-const usersService = require('../../../services/v1/users.js');
+const usersService = require('../../../utils/users');
+const { generateToken } = require('../../../utils/tokens');
 const {
   INTERNAL_SERVER_ERROR,
   BAD_REQUEST,
+  UNAUTHORIZED,
   OK,
+  CREATED,
 } = require('../../../constants/responseCodes');
 
 const TWO_MIN_TIMEOUT = 120000;
@@ -22,18 +25,14 @@ const TWO_MIN_TIMEOUT = 120000;
  */
 const authenticateUser = async (req, res) => {
   req.setTimeout(TWO_MIN_TIMEOUT);
-  const { email, password, rememberSession } = req.body;
+  const { email, password } = req.body;
   if (!email || !password) {
     return res.status(BAD_REQUEST).send('Bad Request');
   }
   try {
-    const response = await usersService.authenticateUser(email, password);
-    req.session.email = email;
-    if (rememberSession) {
-      req.session.cookie.expires = 7 * 24 * 60 * 60 * 1000; // One Week
-    } else {
-      req.session.cookie.expires = false;
-    }
+    const response = {};
+    response.user = await usersService.authenticateUser(email, password);
+    response.token = generateToken(response.user);
     return res.status(OK).send(response);
   } catch (error) {
     return res.status(error.statusCode || INTERNAL_SERVER_ERROR).send(error);
@@ -54,50 +53,28 @@ const createUser = async (req, res) => {
   }
   try {
     const response = await usersService.createUser(email, password, req.body.firstName);
-    return res.status(OK).send(response);
+    return res.status(CREATED).send(response);
   } catch (error) {
     return res.status(error.statusCode || INTERNAL_SERVER_ERROR).send(error);
   }
 };
 
 /**
- * Logout
- * @function logout
+ * Validate token
+ * @function validateToken
  * @param {Object} req The request object from Express
  * @param {Object} res The Response object from Express
  */
-const logout = async (req, res) => {
+const validateToken = async (req, res) => {
   req.setTimeout(TWO_MIN_TIMEOUT);
-  try {
-    const response = req.session.destroy();
-    return res.status(OK).send(response);
-  } catch (error) {
-    return res.status(INTERNAL_SERVER_ERROR).send(error);
+  if (!req.user) {
+    return res.sendStatus(UNAUTHORIZED);
   }
-};
-
-/**
- * Check session
- * @function checkSession
- * @param {Object} req The request object from Express
- * @param {Object} res The Response object from Express
- */
-const checkSession = async (req, res) => {
-  req.setTimeout(TWO_MIN_TIMEOUT);
-  if (!req.session.email) {
-    return res.status(OK).send({ sessionValid: false });
-  }
-  try {
-    const response = await usersService.getUser(req.session.email);
-    return res.status(OK).send({ sessionValid: true, ...response });
-  } catch (error) {
-    return res.status(INTERNAL_SERVER_ERROR).send(error);
-  }
+  return res.status(OK).send({ user: req.user });
 };
 
 module.exports = {
   authenticateUser,
   createUser,
-  logout,
-  checkSession,
+  validateToken,
 };
