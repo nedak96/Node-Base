@@ -38,23 +38,13 @@ userRouter.post('/authenticate-user', controller.authenticateUser);
 userRouter.post('/create-user', controller.createUser);
 
 /**
- * Route to log out user
- * @name logout
+ * Route to validate token
+ * @name validate-token
  * @function
  * @memberof module:api/v1~users
- * @endpoint /api/v1/users/logout
+ * @endpoint /api/v1/users/validate-token
  * @method GET
  */
-userRouter.get('/logout', controller.logout);
-
-/**
- * Route to check session
- * @name logout
- * @function
- * @memberof module:api/v1~users
- * @endpoint /api/v1/users/check-session
- * @method GET
- */
-userRouter.get('/check-session', controller.checkSession);
+userRouter.get('/validate-token', controller.validateToken);
 
 module.exports = userRouter;
