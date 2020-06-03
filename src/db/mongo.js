@@ -28,7 +28,8 @@ const readOne = (collectionName, id, projection) => (
 
 const readMany = (collectionName, query, projection, options) => (
   db.collection(collectionName).find(query, { projection })
-    .sort({ [options.sort || '_id']: options.desc ? -1 : 1 }).limit(options.limit || 1000)
+    .sort({ [options.sort || '_id']: options.desc ? -1 : 1 })
+    .limit(options.limit || 1000)
     .skip(options.skip || 0)
     .toArray()
     .then((res) => res)
