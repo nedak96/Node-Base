@@ -21,12 +21,11 @@ const authenticateUser = async (email, password) => {
     });
 };
 
-const createUser = (email, password, name) => bcrypt.hash(password, saltRounds)
+const createUser = (information) => bcrypt.hash(information.password, saltRounds)
   .then((res) => db.create('users', {
-    _id: email,
-    email,
+    ...information,
+    _id: information.email,
     password: res,
-    name,
   })
     .then(() => ({ ok: true }))
     .catch((error) => {

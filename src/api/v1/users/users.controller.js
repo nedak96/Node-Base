@@ -52,7 +52,7 @@ const createUser = async (req, res) => {
     return res.status(BAD_REQUEST).send('Bad Request');
   }
   try {
-    const response = await usersService.createUser(email, password, req.body.firstName);
+    const response = await usersService.createUser(req.body);
     return res.status(CREATED).send(response);
   } catch (error) {
     return res.status(error.statusCode || INTERNAL_SERVER_ERROR).send(error);
