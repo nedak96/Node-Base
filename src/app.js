@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const { createConnection } = require('./db/mongo');
+const { createConnection } = require('./db/elastic');
 const { checkJwt, refreshJwt } = require('./utils/tokens');
 
 const dbSetup = async () => {

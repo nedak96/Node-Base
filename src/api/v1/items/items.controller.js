@@ -42,11 +42,12 @@ const createItem = async (req, res) => {
 
 const getItems = async (req, res) => {
   req.setTimeout(TWO_MIN_TIMEOUT);
-  const { skip, limit } = req.query;
+  const { skip, limit, search } = req.query;
   try {
     const data = await itemsUtils.getItems(
       skip ? parseInt(skip, 10) : undefined,
       limit ? parseInt(limit, 10) : undefined,
+      search,
     );
     return res.status(OK).send({ docs: data });
   } catch (error) {

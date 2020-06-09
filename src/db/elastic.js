@@ -1,4 +1,5 @@
 const { Client } = require('@elastic/elasticsearch');
+const { v4: uuidv4 } = require('uuid');
 const ConflictError = require('../errors/ConflictError');
 
 let db;
@@ -57,6 +58,40 @@ const readMany = (index, query, options) => (
     })
 );
 
+const search = (index, queryString, options) => (
+  db.search({
+    index,
+    from: options.skip,
+    size: options.limit,
+    body: {
+      query: {
+        query_string: {
+          query: queryString,
+          fields: options.fields,
+        },
+      },
+    },
+    sort: { _score: { order: 'desc' } },
+    filter_path: ['hits.hits._id', 'hits.hits._score', 'hits.hits._source'],
+    _source_includes: options.columns,
+    track_scores: true,
+    explain: true,
+  })
+    .then((res) => {
+      if (!res.body.hits) {
+        return [];
+      }
+      return res.body.hits.hits.map((obj) => ({
+        _id: options.columns && !options.columns.includes('_id') ? undefined : obj._id,
+        ...obj._source,
+        _score: obj._score,
+      }));
+    })
+    .catch((error) => {
+      throw new Error(error);
+    })
+);
+
 const read = (index, toRead = {}, options = {}) => {
   if (typeof toRead === 'string') {
     return readOne(index, toRead, options.columns);
@@ -66,7 +101,7 @@ const read = (index, toRead = {}, options = {}) => {
 
 const createOne = (index, obj) => (
   db.create({
-    id: obj._id,
+    id: obj._id || uuidv4(),
     index,
     body: { ...obj, _id: undefined },
   })
@@ -84,7 +119,10 @@ const createMany = (index, objs) => (
   db.bulk({
     index,
     refresh: true,
-    body: objs.flatMap((obj) => [{ create: { _id: obj._id } }, { ...obj, _id: undefined }]),
+    body: objs.flatMap((obj) => [
+      { create: { _id: obj._id || uuidv4() } },
+      { ...obj, _id: undefined },
+    ]),
   })
     .then((res) => {
       if (res.body.errors) {
@@ -217,4 +255,5 @@ module.exports = {
   update,
   del,
   drop,
+  search,
 };
