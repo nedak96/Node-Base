@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const db = require('../db/mongo');
+const db = require('../db/elastic');
 const UnauthorizedError = require('../errors/Unauthorized');
 const ConflictError = require('../errors/ConflictError');
 
