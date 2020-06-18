@@ -1,10 +1,21 @@
 const db = require('../db/elastic');
+const categoryUtils = require('./categories');
 
-const getItems = (skip, limit, search) => (
-  search
-    ? db.search('items', search, { skip, limit, fields: ['title', 'description'] })
-    : db.read('items', {}, { skip, limit })
-);
+const getItems = async (skip, limit, search, category) => {
+  const categories = await categoryUtils.getChildrenCategories(category);
+  return search
+    ? db.search('items', search, {
+      skip,
+      limit,
+      fields: ['title', 'description'],
+      categories,
+    })
+    : db.read('items', {}, {
+      skip,
+      limit,
+      categories,
+    });
+};
 
 const createItem = (item) => db.create('items', item);
 

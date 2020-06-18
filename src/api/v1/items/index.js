@@ -1,6 +1,6 @@
 /**
  * @module index.js
- * @fileoverview API module for user routes.
+ * @fileoverview API module for item routes.
  * @imports YARN:Express
  * @imports api/v1/items/items.controller
  * @exports itemsRouter
@@ -22,7 +22,7 @@ const itemsRouter = express.Router();
  * @name get-items
  * @function
  * @memberof module:api/v1~items
- * @endpoint /api/v1/users/
+ * @endpoint /api/v1/items/
  * @method GET
  */
 itemsRouter.get('/', controller.getItems);

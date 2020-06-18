@@ -1,11 +1,11 @@
 /**
- * @module /api/v1/items
+ * @module /api/v1/categories
  * @fileoverview
  * @access @public
  * @since
  */
 
-const itemsUtils = require('../../../utils/items');
+const categoryUtils = require('../../../utils/categories');
 const {
   INTERNAL_SERVER_ERROR,
   BAD_REQUEST,
@@ -16,51 +16,38 @@ const {
 const TWO_MIN_TIMEOUT = 120000;
 
 /**
- * Create a new item
- * @function createItem
+ * Create a new category
+ * @function createCategory
  * @param {Object} req The request object from Express
  * @param {Object} res The Response object from Express
  */
-const createItem = async (req, res) => {
+const createCategory = async (req, res) => {
   req.setTimeout(TWO_MIN_TIMEOUT);
   const {
-    title,
-    author,
-    description,
-    image,
+    name,
+    parentId,
   } = req.body;
-  if (!title || !author || !description || !image) {
+  if (!name || parentId === undefined) {
     return res.status(BAD_REQUEST).send('Bad Request');
   }
   try {
-    await itemsUtils.createItem(req.body);
-    return res.sendStatus(CREATED);
+    const dbRes = await categoryUtils.createCategory({ name, parentId });
+    return res.status(CREATED).send(dbRes);
   } catch (error) {
     return res.status(error.statusCode || INTERNAL_SERVER_ERROR).send(error);
   }
 };
 
 /**
- * Get items
- * @function getItems
+ * Get categories
+ * @function getCategories
  * @param {Object} req The request object from Express
  * @param {Object} res The Response object from Express
  */
-const getItems = async (req, res) => {
+const getCategories = async (req, res) => {
   req.setTimeout(TWO_MIN_TIMEOUT);
-  const {
-    skip,
-    limit,
-    search,
-    category,
-  } = req.query;
   try {
-    const data = await itemsUtils.getItems(
-      skip ? parseInt(skip, 10) : undefined,
-      limit ? parseInt(limit, 10) : undefined,
-      search,
-      category,
-    );
+    const data = await categoryUtils.getCategories();
     return res.status(OK).send({ docs: data });
   } catch (error) {
     return res.status(error.statusCode || INTERNAL_SERVER_ERROR).send(error);
@@ -68,15 +55,15 @@ const getItems = async (req, res) => {
 };
 
 /**
- * Delete all items from DB
- * @function deleteAllItems
+ * Delete all categories from DB
+ * @function deleteAllCategories
  * @param {Object} req The request object from Express
  * @param {Object} res The Response object from Express
  */
-const deleteAllItems = async (req, res) => {
+const deleteAllCategories = async (req, res) => {
   req.setTimeout(TWO_MIN_TIMEOUT);
   try {
-    await itemsUtils.deleteAllItems();
+    await categoryUtils.deleteAllCategories();
     return res.sendStatus(OK);
   } catch (error) {
     return res.status(error.statusCode || INTERNAL_SERVER_ERROR).send(error);
@@ -84,7 +71,7 @@ const deleteAllItems = async (req, res) => {
 };
 
 module.exports = {
-  getItems,
-  createItem,
-  deleteAllItems,
+  createCategory,
+  getCategories,
+  deleteAllCategories,
 };

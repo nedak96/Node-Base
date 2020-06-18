@@ -36,7 +36,9 @@ const readMany = (index, query, options) => (
     body: {
       query: {
         bool: {
-          filter: Object.keys(query).map((key) => ({ match: { [key]: query[key] } })),
+          should: (options.categories || []).map((cat) => ({ match: { category: cat } })),
+          minimum_should_match: 1,
+          must: Object.keys(query).map((key) => ({ match: { [key]: query[key] } })),
         },
       },
     },
@@ -65,9 +67,16 @@ const search = (index, queryString, options) => (
     size: options.limit,
     body: {
       query: {
-        query_string: {
-          query: queryString,
-          fields: options.fields,
+        bool: {
+          must: [
+            {
+              query_string: {
+                query: queryString,
+                fields: options.fields,
+              },
+            },
+          ],
+          should: (options.categories || []).map((cat) => ({ match: { category: cat } })),
         },
       },
     },
@@ -105,7 +114,7 @@ const createOne = (index, obj) => (
     index,
     body: { ...obj, _id: undefined },
   })
-    .then((res) => res)
+    .then((res) => ({ _id: res.body._id }))
     .catch((error) => {
       // Catch duplication error
       if (error.statusCode === 409) {
