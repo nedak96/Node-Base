@@ -28,6 +28,17 @@ const itemsRouter = express.Router();
 itemsRouter.get('/', controller.getItems);
 
 /**
+ * Route for getting an item
+ * @name get-item
+ * @function
+ * @memberof module:api/v1~items
+ * @endpoint /api/v1/items/:itemId
+ * @param itemId
+ * @method GET
+ */
+itemsRouter.get('/:itemId', controller.getItem);
+
+/**
  * Route to create a new item
  * @name create-item
  * @function

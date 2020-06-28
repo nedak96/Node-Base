@@ -11,6 +11,7 @@ const {
   BAD_REQUEST,
   OK,
   CREATED,
+  NOT_FOUND,
 } = require('../../../constants/responseCodes');
 
 const TWO_MIN_TIMEOUT = 120000;
@@ -68,6 +69,26 @@ const getItems = async (req, res) => {
 };
 
 /**
+ * Get an item
+ * @function getItem
+ * @param {Object} req The request object from Express
+ * @param {Object} res The Response object from Express
+ */
+const getItem = async (req, res) => {
+  req.setTimeout(TWO_MIN_TIMEOUT);
+  const { itemId } = req.params;
+  try {
+    const item = await itemsUtils.getItem(itemId);
+    if (item === null) {
+      return res.sendStatus(NOT_FOUND);
+    }
+    return res.status(OK).send(item);
+  } catch (error) {
+    return res.status(error.statusCode || INTERNAL_SERVER_ERROR).send(error);
+  }
+};
+
+/**
  * Delete all items from DB
  * @function deleteAllItems
  * @param {Object} req The request object from Express
@@ -87,4 +108,5 @@ module.exports = {
   getItems,
   createItem,
   deleteAllItems,
+  getItem,
 };

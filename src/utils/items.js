@@ -17,12 +17,15 @@ const getItems = async (skip, limit, search, category) => {
     });
 };
 
+const getItem = (id) => db.read('items', id);
+
 const createItem = (item) => db.create('items', item);
 
 const deleteAllItems = () => db.drop('items');
 
 module.exports = {
   getItems,
+  getItem,
   createItem,
   deleteAllItems,
 };
