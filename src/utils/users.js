@@ -1,50 +1,23 @@
-const bcrypt = require('bcrypt');
-const db = require('../db/elastic');
-const UnauthorizedError = require('../errors/Unauthorized');
-const ConflictError = require('../errors/ConflictError');
+const axios = require('axios').default;
+const { getManagementToken } = require('./tokens');
 
-const saltRounds = 10;
+const { AUTH0_DOMAIN } = process.env;
 
-const users = {};
-
-const authenticateUser = async (email, password) => {
-  const user = await db.read('users', email);
-  if (!user) {
-    throw new UnauthorizedError();
-  }
-  return bcrypt.compare(password, user.password)
-    .then((res) => {
-      if (!res) {
-        throw new UnauthorizedError();
-      }
-      return { ...user, password: undefined };
-    });
-};
-
-const createUser = (information) => bcrypt.hash(information.password, saltRounds)
-  .then((res) => db.create('users', {
-    ...information,
-    _id: information.email,
-    password: res,
-  })
-    .then(() => ({ ok: true }))
-    .catch((error) => {
-      if (error.statusCode === 409) {
-        throw new ConflictError();
-      }
-      throw new Error(error);
-    }));
-
-const getUser = async (email) => {
-  const user = await db.read('users', email);
-  if (!users) {
-    throw UnauthorizedError();
-  }
-  return { ...user, password: undefined };
-};
+const updateUser = async (userId, given_name, family_name, picture) => (
+  axios.patch(`https://${AUTH0_DOMAIN}/api/v2/users/${userId}`,
+    { given_name, family_name, picture },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${await getManagementToken()}`,
+      },
+    })
+    .then((res) => res)
+    .catch((e) => {
+      throw e;
+    })
+);
 
 module.exports = {
-  authenticateUser,
-  createUser,
-  getUser,
+  updateUser,
 };

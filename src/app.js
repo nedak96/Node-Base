@@ -3,7 +3,9 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { createConnection } = require('./db/elastic');
-const { checkJwt, refreshJwt } = require('./utils/tokens');
+const { checkJwt } = require('./utils/tokens');
+
+const { FRONTEND_DOMAIN, SERVER_DOMAIN } = process.env;
 
 const dbSetup = async () => {
   try {
@@ -23,11 +25,10 @@ app.use(bodyParser.json());
 app.use(morgan('dev'));
 
 app.use(cors({
-  origin: ['http://127.0.0.1:2100', 'http://127.0.0.1:3001'],
+  origin: [FRONTEND_DOMAIN, SERVER_DOMAIN],
 }));
 
-app.use(checkJwt(false));
-app.use(refreshJwt);
+app.use(checkJwt);
 
 require('./api/v1')(app);
 
