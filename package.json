@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.6.1",
-    "bcrypt": "^4.0.1",
+    "axios": "^0.19.2",
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -17,6 +17,7 @@
     "express": "^4.17.1",
     "express-jwt": "^5.3.3",
     "jsonwebtoken": "^8.5.1",
+    "jwks-rsa": "^1.8.1",
     "mongodb": "^3.5.7",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",

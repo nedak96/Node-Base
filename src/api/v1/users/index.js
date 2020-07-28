@@ -18,33 +18,13 @@ const controller = require('./users.controller.js');
 const userRouter = express.Router();
 
 /**
- * Route for authenticating a user
- * @name authenticate-user
+ * Route to update a user's information
+ * @name update-user
  * @function
  * @memberof module:api/v1~users
- * @endpoint /api/v1/users/authenticate-user
- * @method POST
+ * @endpoint /api/v1/users/:userId
+ * @method PUT
  */
-userRouter.post('/authenticate-user', controller.authenticateUser);
-
-/**
- * Route to create a new user
- * @name create-user
- * @function
- * @memberof module:api/v1~users
- * @endpoint /api/v1/users/create-user
- * @method POST
- */
-userRouter.post('/create-user', controller.createUser);
-
-/**
- * Route to validate token
- * @name validate-token
- * @function
- * @memberof module:api/v1~users
- * @endpoint /api/v1/users/validate-token
- * @method GET
- */
-userRouter.get('/validate-token', controller.validateToken);
+userRouter.put('/:userId', controller.updateUser);
 
 module.exports = userRouter;

@@ -9,5 +9,6 @@ module.exports = {
   },
   rules: {
     'no-underscore-dangle': 0,
+    camelcase: 0,
   },
 }
